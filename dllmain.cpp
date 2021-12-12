@@ -19,6 +19,25 @@ DWORD WINAPI HackThread(HMODULE hModule)
     //for 64 bit games
     //PPEB peb = (PPEB)__readgsqword(0x60);
 
+    
+    //Or manually patch the KERNELBASE IsDebuggerPresentFunction:
+     HMODULE hDLL = GetModuleHandle(L"KERNELBASE.dll");
+    DWORD* isDebuggerAddr = (DWORD*)GetProcAddress(hDLL, "IsDebuggerPresent");
+   
+    //Allow write permissions so we can patch
+    DWORD oldProtect;
+    VirtualProtect(isDebuggerAddr, 0xA, PAGE_EXECUTE_READWRITE, &oldProtect);
+    
+    //Zero the memory
+    memset(isDebuggerAddr, 0x90, 0xA);
+
+    //Bytes to write
+    BYTE shellcode[] = { 0x64, 0xB8, 0x00, 0x00, 0x00, 0x00, 0xC3 };
+
+    //Copy shellcode into function and restore page protections
+    memcpy(isDebuggerAddr, &shellcode, sizeof(shellcode));
+    VirtualProtect(isDebuggerAddr, 0xA, oldProtect, &oldProtect);
+    
     //F3 to uninject
     while (!GetAsyncKeyState(VK_F3) &1)
     {
