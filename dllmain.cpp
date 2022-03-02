@@ -2,7 +2,7 @@
 #include <Windows.h>
 #include <winternl.h>
 
-//Simple anti-anti debug, will work for games with shit anticheat that check isDebuggerPresent(), dont try and use on BE or EAC unless you have brain damage
+//Simple anti-anti debug, will work for games with shit anticheat that check isDebuggerPresent(), dont try and use on BE or EAC unless you have disabled ObRegisterCallbacks().
 
 DWORD WINAPI HackThread(HMODULE hModule)
 {
